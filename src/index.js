@@ -1,40 +1,39 @@
-module.exports = function solveSudoku(matrix) {
-  /*fill the empty place in matrix by possible values*/
+module.exports = function olveSudoku(matrix) {
+  
   for(let i = 0; i < matrix.length; i++){
     for(let j = 0; j < matrix.length; j++){
       if(matrix[i][j] === 0){
-        var possibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        matrix[i][j] = possibleValues;
+        matrix[i][j] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
       }
     }
   }
-  
-  /*in every row find known elementst and delite it from possible values*/
+
   for(let i = 0; i < matrix.length; i++){
     compareRow(matrix, i);
   }
-  
-   /*in every column find known elementst and delite it from possible values*/
+
   for(let i = 0; i < matrix.length; i++){
     compareColumn(matrix, i);
   }
-  
+   for(let i = 1; i <= 9; i++){
+    compareSquare(matrix, i);
+  }
+
   return matrix;
 }
 
 
-/*Готово для исп*/
 function compareRow(matrix, column){
   for(let i = 0; i < matrix.length; i++){
     if(typeof matrix[column][i] != "object"){
-        var elem = matrix[column][i];
+        let elem = matrix[column][i];
         for(let j = 0; j < matrix.length; j++){
           if(typeof matrix[column][j] == "object"){
-            var index = matrix[column][j].indexOf(elem);
+            const index = matrix[column][j].indexOf(elem);
             if(index != -1){
               matrix[column][j].splice(index, 1);
             }
-            if(matrix[column][j].length == 0){
+            if(matrix[column][j].length == 1){
               matrix[column][j] = matrix[column][j][0];
             }
           }
@@ -47,14 +46,14 @@ function compareRow(matrix, column){
 function compareColumn(matrix, row){
   for(let i = 0; i < matrix.length; i++){
     if(typeof matrix[i][row] != "object"){
-        var elem = matrix[i][row];
+        let elem = matrix[i][row];
         for(let j = 0; j < matrix.length; j++){
           if(typeof matrix[j][row] == "object"){
-            var index = matrix[j][row].indexOf(elem);
+            const index = matrix[j][row].indexOf(elem);
             if(index != -1){
               matrix[j][row].splice(index, 1);
             }
-            if(matrix[j][row].length == 0){
+            if(matrix[j][row].length == 1){
               matrix[j][row] = matrix[j][row][0];
             }
           }
@@ -62,4 +61,37 @@ function compareColumn(matrix, row){
     }
   }
   return matrix; 
+}
+
+function compareSquare(matrix, sqrNumber){
+  let sqrCoord = {1: [0, 0], 2: [0, 3], 3: [0, 6], 
+                  4: [3, 0], 5: [3, 3], 6: [3, 6],
+                  7: [6, 0], 8: [6, 6], 9: [6, 6]
+                 };
+  const coord = sqrCoord[sqrNumber];
+  const definedValues = [];
+  for(let i = coord[0]; i < coord[0] + 3; i++){
+    for(let j = coord[1]; j < coord[1] + 3; j++){
+      if(typeof matrix[i][j] != "object"){
+        definedValues.push(matrix[i][j]);
+      }
+    }
+  }
+  for(let i = coord[0]; i < coord[0] + 3; i++){
+    for(let j = coord[1]; j < coord[1] + 3; j++){
+      if(typeof matrix[i][j] == "object"){
+        definedValues.forEach((item) => {
+          const index = matrix[i][j].indexOf(item);
+          if(index != -1){
+            matrix[i][j].splice(index, 1);
+          }
+        });
+        if(matrix[i][j].length == 1){
+          matrix[i][j] = matrix[i][j][0];
+        }
+      }
+    }
+  }
+  
+  return matrix;
 }
